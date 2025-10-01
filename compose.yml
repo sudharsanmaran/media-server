@@ -1,0 +1,128 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHED_URL}
+    volumes:
+      - ./config:/config
+      - ./data/media:/data/media
+    ports:
+      - 8096:8096
+      - 7359:7359/udp
+      - 1900:1900/udp
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./jellyseerr:/app/config
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+
+  jellystat-db:
+    image: postgres:15.2
+    container_name: jellystat-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./jellystat/postgres:/var/lib/postgresql/data
+
+  jellystat:
+    image: cyfershepard/jellystat:latest
+    container_name: jellystat
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_IP: jellystat-db
+      POSTGRES_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET}
+      TZ: ${TZ}
+    volumes:
+      - ./jellystat/backup-data:/app/backend/backup-data
+    ports:
+      - 3000:3000
+    depends_on:
+      - jellystat-db
+
+  # RDTClient for AllDebrid - FOOLPROOF METHOD
+  rdtclient:
+    image: rogerfar/rdtclient:latest
+    container_name: rdtclient
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - RDTCLIENT_DB_HOST=sqlite
+      - RDTCLIENT_DB_LOGGING=false
+      - RDTCLIENT_AUTHENTICATION_USERNAME=${ADMIN_USERNAME}
+      - RDTCLIENT_AUTHENTICATION_PASSWORD=${ADMIN_PASSWORD}
+    volumes:
+      - ./rdtclient/config:/data/db
+      - ./data/media:/data/media
+    ports:
+      - 6500:6500
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PROWLARR__AUTH__METHOD=External
+      - PROWLARR__AUTH__REQUIRED=DisabledForLocalAddresses
+    volumes:
+      - ./prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - RADARR__AUTH__METHOD=External
+      - RADARR__AUTH__REQUIRED=DisabledForLocalAddresses
+    volumes:
+      - ./radarr:/config
+      - ./data:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - SONARR__AUTH__METHOD=External
+      - SONARR__AUTH__REQUIRED=DisabledForLocalAddresses
+    volumes:
+      - ./sonarr:/config
+      - ./data:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+networks:
+  default:
+    name: jellyfin-network
