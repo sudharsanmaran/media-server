@@ -3,9 +3,9 @@ services:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHED_URL}
     volumes:
       - /data/code/media-server/config:/config
@@ -20,9 +20,9 @@ services:
     image: rogerfar/rdtclient:latest
     container_name: rdtclient
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /data/code/media-server/rdtclient/config:/data/db
       - /data/downloads:/data/downloads
@@ -34,9 +34,9 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - RADARR__AUTH__METHOD=External
       - RADARR__AUTH__REQUIRED=DisabledForLocalAddresses
     volumes:
@@ -51,9 +51,9 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - SONARR__AUTH__METHOD=External
       - SONARR__AUTH__REQUIRED=DisabledForLocalAddresses
     volumes:
@@ -68,9 +68,9 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /data/code/media-server/prowlarr:/config
     ports:
@@ -82,9 +82,9 @@ services:
     container_name: jellyseerr
     image: fallenbagel/jellyseerr:latest
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Kolkata
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /data/code/media-server/jellyseerr:/app/config
     ports:
@@ -115,7 +115,7 @@ services:
       POSTGRES_IP: jellystat-db
       POSTGRES_PORT: 5432
       JWT_SECRET: "my-secret-jwt-key"
-      TZ: Asia/Kolkata
+      TZ: ${TZ}
     volumes:
       - /data/code/media-server/jellystat/backup-data:/app/backend/backup-data
     ports:
