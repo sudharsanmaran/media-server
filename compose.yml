@@ -43,6 +43,7 @@ services:
       - /data/code/media-server/radarr:/config
       - /data/downloads:/downloads
       - /data/media/movies:/movies
+      - /data/media/movies-tamil:/movies-tamil
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -74,6 +75,7 @@ services:
     ports:
       - 9696:9696  # Prowlarr
     environment:
+      - DOT=off
       - VPN_SERVICE_PROVIDER=surfshark
       - VPN_TYPE=wireguard
       - WIREGUARD_PRIVATE_KEY=${SURFSHARK_PRIVATE_KEY}
